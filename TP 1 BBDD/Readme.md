@@ -34,7 +34,7 @@ Esto muestra cómo las claves foráneas aseguran la integridad.
 -------------------------------------------------------------------------------------------
 
 🔹Ejercicio 3: Concurrencia
-Simular condiciones de aislamiento: Para mostrar la diferencia entre READ COMMITTED y SERIALIZABLE:
+Simular condiciones de aislamiento: Para mostrar la diferencia entre `READ COMMITTED` y `SERIALIZABLE`:
 
 ```sql
 -- Usuario 1
@@ -49,9 +49,8 @@ SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 UPDATE Cuentas SET saldo = saldo + 100 WHERE CuentaID = 1;
 
 COMMIT;
-```
-
 *ERROR DE ESPERA* *detecto que alguien esta intentando cambiar los mismos datos y tira error para que no haya interferencia*
+```
 
 Analiza los resultados según el nivel de aislamiento.
 
