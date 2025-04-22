@@ -18,7 +18,7 @@ ON DELETE RESTRICT;
 🔹Ejercicio 2: Implementación de Restricciones
 Crear tabla y probar integridad referencial:
 
-```
+```sql
 CREATE TABLE Matriculas (
     MatriculaID INT PRIMARY KEY,
     EstudianteID INT,
