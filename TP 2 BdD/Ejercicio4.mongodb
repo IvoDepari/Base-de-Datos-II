@@ -1,0 +1,10 @@
+db.empleados.updateMany(
+    {},
+    {$set: {
+      direccion: {
+        calle: "Por definir",
+        ciudad: "Por definir",
+        codigo_postal: "0000"
+      }
+    }}
+  )

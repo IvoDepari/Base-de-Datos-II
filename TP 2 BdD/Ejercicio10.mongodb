@@ -1,0 +1,9 @@
+use admin
+db.createUser({
+  user: "usuarioEmpresa",
+  pwd: "contraseñaSegura123",
+  roles: [
+    {role: "readWrite", db: "empresa"},
+    {role: "read", db: "reporting"}
+  ]
+})

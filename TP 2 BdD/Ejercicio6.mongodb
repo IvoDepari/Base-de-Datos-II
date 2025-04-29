@@ -1,0 +1,8 @@
+// Primero creamos la colección clientes
+db.clientes.insertMany([
+    {nombre: "Ana", apellido: "García", email: "ana@example.com"},
+    {nombre: "Luis", apellido: "Martínez", email: "luis@example.com"}
+  ])
+  
+  // Crear índice compuesto
+  db.clientes.createIndex({apellido: 1, nombre: 1})

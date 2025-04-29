@@ -1,0 +1,13 @@
+// Crear colección cursos
+db.cursos.insertMany([
+    {_id: 1, nombre: "Programación", duracion: 40},
+    {_id: 2, nombre: "Diseño", duracion: 30},
+    {_id: 3, nombre: "Marketing", duracion: 25}
+  ])
+  
+  // Crear colección alumnos con referencias
+  db.alumnos.insertMany([
+    {nombre: "Carlos", cursos: [1, 3]},
+    {nombre: "Sofía", cursos: [2]},
+    {nombre: "Pedro", cursos: [1, 2, 3]}
+  ])

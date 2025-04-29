@@ -1,0 +1,25 @@
+// 1. Crear base de datos empresa
+use empresa
+
+// 2. Insertar 10 empleados
+db.empleados.insertMany([
+  {nombre: "Juan", edad: 28, puesto: "Desarrollador"},
+  {nombre: "María", edad: 35, puesto: "Gerente"},
+  {nombre: "Pedro", edad: 22, puesto: "Pasante"},
+  {nombre: "Laura", edad: 30, puesto: "Diseñadora"},
+  {nombre: "Carlos", edad: 45, puesto: "Director"},
+  {nombre: "Ana", edad: 27, puesto: "Analista"},
+  {nombre: "Luis", edad: 32, puesto: "Desarrollador"},
+  {nombre: "Sofía", edad: 29, puesto: "Marketing"},
+  {nombre: "Miguel", edad: 38, puesto: "Ingeniero"},
+  {nombre: "Elena", edad: 24, puesto: "Pasante"}
+])
+
+// 3. Actualizar edad de un empleado
+db.empleados.updateOne(
+  {nombre: "Juan"},
+  {$set: {edad: 29}}
+)
+
+// 4. Eliminar pasantes
+db.empleados.deleteMany({puesto: "Pasante"})

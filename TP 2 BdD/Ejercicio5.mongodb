@@ -1,0 +1,20 @@
+// Primero creamos la colección ventas con algunos datos
+db.ventas.insertMany([
+    {producto: "Laptop", cantidad: 5, precio_unitario: 1200},
+    {producto: "Mouse", cantidad: 20, precio_unitario: 25},
+    {producto: "Teclado", cantidad: 15, precio_unitario: 50},
+    {producto: "Laptop", cantidad: 3, precio_unitario: 1200},
+    {producto: "Monitor", cantidad: 8, precio_unitario: 300}
+  ])
+  
+  // Consulta de agregación
+  db.ventas.aggregate([
+    {
+      $group: {
+        _id: "$producto",
+        totalVentas: {
+          $sum: {$multiply: ["$cantidad", "$precio_unitario"]}
+        }
+      }
+    }
+  ])
