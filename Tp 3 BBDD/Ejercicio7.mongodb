@@ -1,0 +1,39 @@
+// Clasificar los productos según su precio: "Económico" (<100), "Estándar" (100-500), "Premium" (>500).
+db.productos.aggregate([
+  {
+    $project: {
+      nombre: 1,
+      precio: 1,
+      categoria: 1,
+      clasificacion: {
+        $switch: {
+          branches: [
+            { case: { $lt: ["$precio", 100] }, then: "Económico" },
+            { case: { $lte: ["$precio", 500] }, then: "Estándar" }
+          ],
+          default: "Premium"
+        }
+      }
+    }
+  }
+])
+
+// Clasificar las ventas según su total: "Pequeña" (<200), "Mediana" (200-800), "Grande" (>800).
+db.ventas.aggregate([
+  {
+    $project: {
+      _id: 1,
+      "cliente.nombre": 1,
+      total: 1,
+      clasificacion: {
+        $switch: {
+          branches: [
+            { case: { $lt: ["$total", 200] }, then: "Pequeña" },
+            { case: { $lte: ["$total", 800] }, then: "Mediana" }
+          ],
+          default: "Grande"
+        }
+      }
+    }
+  }
+])

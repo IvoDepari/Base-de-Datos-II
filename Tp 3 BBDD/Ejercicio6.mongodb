@@ -1,0 +1,42 @@
+// Agrupar las ventas por mes y calcular el total vendido en cada mes.
+db.ventas.aggregate([
+  {
+    $project: {
+      mes: { $month: "$fecha" },
+      total: 1
+    }
+  },
+  {
+    $group: {
+      _id: "$mes",
+      totalVendido: { $sum: "$total" },
+      cantidadVentas: { $sum: 1 }
+    }
+  },
+  {
+    $sort: { _id: 1 }
+  }
+])
+
+// Encontrar el día de la semana con más ventas.
+db.ventas.aggregate([
+  {
+    $project: {
+      diaSemana: { $dayOfWeek: "$fecha" },
+      total: 1
+    }
+  },
+  {
+    $group: {
+      _id: "$diaSemana",
+      totalVendido: { $sum: "$total" },
+      cantidadVentas: { $sum: 1 }
+    }
+  },
+  {
+    $sort: { cantidadVentas: -1 }
+  },
+  {
+    $limit: 1
+  }
+])

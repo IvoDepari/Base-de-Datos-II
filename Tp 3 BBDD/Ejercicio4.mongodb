@@ -1,0 +1,30 @@
+// Deconstruir el array de valoraciones de productos para obtener una lista plana donde cada documento contenga una valoración individual.
+db.productos.aggregate([
+  {
+    $unwind: "$valoraciones"
+  },
+  {
+    $project: {
+      nombre: 1,
+      "valoracion.usuario": "$valoraciones.usuario",
+      "valoracion.puntuacion": "$valoraciones.puntuacion",
+      "valoracion.comentario": "$valoraciones.comentario"
+    }
+  }
+])
+
+// Luego, agrupar por puntuación y contar cuántas valoraciones hay de cada puntuación.
+db.productos.aggregate([
+  {
+    $unwind: "$valoraciones"
+  },
+  {
+    $group: {
+      _id: "$valoraciones.puntuacion",
+      cantidad: { $sum: 1 }
+    }
+  },
+  {
+    $sort: { _id: 1 }
+  }
+])

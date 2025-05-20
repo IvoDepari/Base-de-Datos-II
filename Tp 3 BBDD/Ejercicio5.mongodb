@@ -1,0 +1,47 @@
+// Enriquecer cada documento de ventas con la información completa del producto vendido (mediante un lookup a la colección productos).
+db.ventas.aggregate([
+  {
+    $lookup: {
+      from: "productos",
+      localField: "producto_id",
+      foreignField: "_id",
+      as: "producto"
+    }
+  },
+  {
+    $unwind: "$producto"
+  },
+  {
+    $project: {
+      "cliente.nombre": 1,
+      total: 1,
+      "producto.nombre": 1,
+      "producto.categoria": 1
+    }
+  }
+])
+
+// Calcular el total vendido por categoría de producto.
+db.ventas.aggregate([
+  {
+    $lookup: {
+      from: "productos",
+      localField: "producto_id",
+      foreignField: "_id",
+      as: "producto"
+    }
+  },
+  {
+    $unwind: "$producto"
+  },
+  {
+    $group: {
+      _id: "$producto.categoria",
+      totalVendido: { $sum: "$total" },
+      cantidadVentas: { $sum: 1 }
+    }
+  },
+  {
+    $sort: { totalVendido: -1 }
+  }
+])
