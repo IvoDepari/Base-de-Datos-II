@@ -1,0 +1,78 @@
+//Crea Departamentos
+CREATE (:Departamento {nombre: 'Recursos Humanos'});
+CREATE (:Departamento {nombre: 'Desarrollo'});
+CREATE (:Departamento {nombre: 'Marketing'});
+
+//Crea Empleados
+CREATE (:Empleado {nombre: 'Ana', apellido: 'Gómez', id: 1});
+CREATE (:Empleado {nombre: 'Luis', apellido: 'Pérez', id: 2});
+CREATE (:Empleado {nombre: 'Carlos', apellido: 'López', id: 3});
+CREATE (:Empleado {nombre: 'Marta', apellido: 'Ramírez', id: 4});
+CREATE (:Empleado {nombre: 'Sofía', apellido: 'Torres', id: 5});
+CREATE (:Empleado {nombre: 'Javier', apellido: 'Fernandez', id: 6});
+CREATE (:Empleado {nombre: 'Patricia', apellido: 'Suárez', id: 7});
+CREATE (:Empleado {nombre: 'Fernando', apellido: 'Ibarra', id: 8});
+CREATE (:Empleado {nombre: 'Valeria', apellido: 'Martínez', id: 9});
+
+//Crea Proyectos
+CREATE (:Proyecto {nombre_proyecto: 'Proyecto Alpha'});
+CREATE (:Proyecto {nombre_proyecto: 'Proyecto Beta'});
+
+//Asigna empleados a departamento RRHH
+MATCH (e:Empleado {id:1}), (d:Departamento {nombre:'Recursos Humanos'}) CREATE (e)-[:PERTENECE_A]->(d);
+MATCH (e:Empleado {id:2}), (d:Departamento {nombre:'Recursos Humanos'}) CREATE (e)-[:PERTENECE_A]->(d);
+MATCH (e:Empleado {id:3}), (d:Departamento {nombre:'Recursos Humanos'}) CREATE (e)-[:PERTENECE_A]->(d);
+
+//Asigna empleados a departamento Desarrollo
+MATCH (e:Empleado {id:4}), (d:Departamento {nombre:'Desarrollo'}) CREATE (e)-[:PERTENECE_A]->(d);
+MATCH (e:Empleado {id:5}), (d:Departamento {nombre:'Desarrollo'}) CREATE (e)-[:PERTENECE_A]->(d);
+MATCH (e:Empleado {id:6}), (d:Departamento {nombre:'Desarrollo'}) CREATE (e)-[:PERTENECE_A]->(d);
+
+//Asigna empleados a departamento Marketing
+MATCH (e:Empleado {id:7}), (d:Departamento {nombre:'Marketing'}) CREATE (e)-[:PERTENECE_A]->(d);
+MATCH (e:Empleado {id:8}), (d:Departamento {nombre:'Marketing'}) CREATE (e)-[:PERTENECE_A]->(d);
+MATCH (e:Empleado {id:9}), (d:Departamento {nombre:'Marketing'}) CREATE (e)-[:PERTENECE_A]->(d);
+
+//Asigna empleados a Proyecto Alpha
+MATCH (e:Empleado {id:1}), (p:Proyecto {nombre_proyecto: 'Proyecto Alpha'}) CREATE (e)-[:TRABAJA_EN {horas: 10}]->(p);
+MATCH (e:Empleado {id:2}), (p:Proyecto {nombre_proyecto: 'Proyecto Alpha'}) CREATE (e)-[:TRABAJA_EN {horas: 15}]->(p);
+MATCH (e:Empleado {id:4}), (p:Proyecto {nombre_proyecto: 'Proyecto Alpha'}) CREATE (e)-[:TRABAJA_EN {horas: 20}]->(p);
+MATCH (e:Empleado {id:7}), (p:Proyecto {nombre_proyecto: 'Proyecto Alpha'}) CREATE (e)-[:TRABAJA_EN {horas: 12}]->(p);
+
+//Asigna empleados a Proyecto Beta
+MATCH (e:Empleado {id:4}), (p:Proyecto {nombre_proyecto: 'Proyecto Beta'}) CREATE (e)-[:TRABAJA_EN {horas: 15}]->(p);
+MATCH (e:Empleado {id:5}), (p:Proyecto {nombre_proyecto: 'Proyecto Beta'}) CREATE (e)-[:TRABAJA_EN {horas: 10}]->(p);
+MATCH (e:Empleado {id:6}), (p:Proyecto {nombre_proyecto: 'Proyecto Beta'}) CREATE (e)-[:TRABAJA_EN {horas: 12}]->(p);
+MATCH (e:Empleado {id:8}), (p:Proyecto {nombre_proyecto: 'Proyecto Beta'}) CREATE (e)-[:TRABAJA_EN {horas: 8}]->(p);
+MATCH (e:Empleado {id:9}), (p:Proyecto {nombre_proyecto: 'Proyecto Beta'}) CREATE (e)-[:TRABAJA_EN {horas: 6}]->(p);
+
+//Asigna Lider a cada proyecto
+MATCH (e:Empleado {id:1}), (p:Proyecto {nombre_proyecto: 'Proyecto Alpha'}) CREATE (e)-[:LIDERA]->(p);
+MATCH (e:Empleado {id:4}), (p:Proyecto {nombre_proyecto: 'Proyecto Beta'}) CREATE (e)-[:LIDERA]->(p);
+
+-------------------------------------------------------------------------------------------
+Consulta 1 (Obtener el nombre del proyecto, su líder y los empleados asignados):
+MATCH (p:Proyecto)<-[:LIDERA]-(lider:Empleado)
+OPTIONAL MATCH (e:Empleado)-[:TRABAJA_EN]->(p)
+RETURN 
+  p.nombre_proyecto AS Proyecto, 
+  lider.nombre + ' ' + lider.apellido AS Lider, 
+  collect(e.nombre + ' ' + e.apellido) AS Empleados_Asignados;
+
+---------------------------------------------------------------
+
+Consulta 2 (Calcular el total de horas semanales por proyecto):
+MATCH (e:Empleado)-[t:TRABAJA_EN]->(p:Proyecto)
+RETURN 
+  p.nombre_proyecto AS Proyecto, 
+  sum(t.horas) AS Total_Horas_Semanales;
+
+---------------------------------------------------------------
+
+Consulta 3 (Listar los empleados que trabajan en más de un proyecto):
+MATCH (e:Empleado)-[:TRABAJA_EN]->(p:Proyecto)
+WITH e, count(p) AS cantidadProyectos
+WHERE cantidadProyectos > 1
+RETURN 
+  e.nombre + ' ' + e.apellido AS Empleado, 
+  cantidadProyectos;

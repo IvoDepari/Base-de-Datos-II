@@ -1,0 +1,22 @@
+Consulta 1 (Obtener el nombre del proyecto, su líder y los empleados asignados):
+MATCH (p:Proyecto)<-[:LIDERA]-(lider:Empleado)
+OPTIONAL MATCH (e:Empleado)-[:TRABAJA_EN]->(p)
+RETURN 
+  p.nombre_proyecto AS Proyecto, 
+  lider.nombre + ' ' + lider.apellido AS Lider, 
+  collect(e.nombre + ' ' + e.apellido) AS Empleados_Asignados;
+
+Consulta 2 (Calcular el total de horas semanales por proyecto):
+MATCH (e:Empleado)-[t:TRABAJA_EN]->(p:Proyecto)
+RETURN 
+  p.nombre_proyecto AS Proyecto, 
+  sum(t.horas) AS Total_Horas_Semanales;
+
+
+Consulta 3 (Listar los empleados que trabajan en más de un proyecto):
+MATCH (e:Empleado)-[:TRABAJA_EN]->(p:Proyecto)
+WITH e, count(p) AS cantidadProyectos
+WHERE cantidadProyectos > 1
+RETURN 
+  e.nombre + ' ' + e.apellido AS Empleado, 
+  cantidadProyectos;
