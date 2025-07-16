@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Biblioteca Digital</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f7f7f7; }
+        h1 { color: #2c3e50; }
+        section { background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001; }
+        label { display: block; margin-top: 8px; }
+        input, select { margin-bottom: 8px; padding: 5px; width: 100%; max-width: 400px; }
+        button { margin-top: 8px; padding: 8px 16px; border: none; border-radius: 4px; background: #2980b9; color: #fff; cursor: pointer; }
+        button:hover { background: #3498db; }
+        table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background: #2980b9; color: #fff; }
+        tr:nth-child(even) { background: #f2f2f2; }
+        .error { color: #c0392b; }
+        .success { color: #27ae60; }
+    </style>
+</head>
+<body>
+    <h1>Biblioteca Digital</h1>
+
+    <section>
+        <h2>Buscar Libros</h2>
+        <input type="text" id="busqueda" placeholder="Título, autor o género">
+        <button onclick="buscarLibros()">Buscar</button>
+        <div id="libros-lista"></div>
+    </section>
+
+    <section>
+        <h2>Agregar Libro</h2>
+        <form id="form-agregar" onsubmit="agregarLibro(event)">
+            <label>Título: <input required name="titulo"></label>
+            <label>Autor: <input required name="autor"></label>
+            <label>ISBN: <input required name="isbn"></label>
+            <label>Género: <input required name="genero"></label>
+            <label>Año de publicación: <input required type="number" name="anioPublicacion"></label>
+            <label>Copias: <input required type="number" name="copias" min="1"></label>
+            <button type="submit">Agregar</button>
+        </form>
+        <div id="msg-agregar"></div>
+    </section>
+
+    <section>
+        <h2>Prestar Libro</h2>
+        <form id="form-prestar" onsubmit="prestarLibro(event)">
+            <label>ISBN: <input required name="isbn"></label>
+            <label>Usuario: <input required name="usuario"></label>
+            <button type="submit">Prestar</button>
+        </form>
+        <div id="msg-prestar"></div>
+    </section>
+
+    <section>
+        <h2>Devolver Libro</h2>
+        <form id="form-devolver" onsubmit="devolverLibro(event)">
+            <label>ID del Préstamo: <input required name="prestamoId"></label>
+            <button type="submit">Devolver</button>
+        </form>
+        <div id="msg-devolver"></div>
+    </section>
+
+    <section>
+        <h2>Top 5 Libros Más Prestados</h2>
+        <button onclick="cargarPopulares()">Ver Reporte</button>
+        <div id="populares-lista"></div>
+    </section>
+
+    <script>
+    async function buscarLibros() {
+        const q = document.getElementById('busqueda').value;
+        const url = q ? `/libros?busqueda=${encodeURIComponent(q)}` : '/libros';
+        const res = await fetch(url);
+        const data = await res.json();
+        let html = '<table><tr><th>Título</th><th>Autor</th><th>ISBN</th><th>Género</th><th>Año</th><th>Copias</th><th>Disponibles</th></tr>';
+        data.forEach(l => {
+            html += `<tr><td>${l.titulo}</td><td>${l.autor}</td><td>${l.isbn}</td><td>${l.genero}</td><td>${l.anioPublicacion}</td><td>${l.copias}</td><td>${l.disponibles}</td></tr>`;
+        });
+        html += '</table>';
+        document.getElementById('libros-lista').innerHTML = html;
+    }
+    buscarLibros(); // Cargar al inicio
+
+    async function agregarLibro(e) {
+        e.preventDefault();
+        const form = e.target;
+        const datos = Object.fromEntries(new FormData(form));
+        datos.anioPublicacion = parseInt(datos.anioPublicacion);
+        datos.copias = parseInt(datos.copias);
+        const res = await fetch('/libros', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(datos)
+        });
+        const data = await res.json();
+        document.getElementById('msg-agregar').innerHTML = data.mensaje ? `<span class='success'>${data.mensaje}</span>` : `<span class='error'>${data.error}</span>`;
+        if(data.mensaje) { form.reset(); buscarLibros(); }
+    }
+
+    async function prestarLibro(e) {
+        e.preventDefault();
+        const form = e.target;
+        const datos = Object.fromEntries(new FormData(form));
+        const res = await fetch('/prestamos', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(datos)
+        });
+        const data = await res.json();
+        document.getElementById('msg-prestar').innerHTML = data.mensaje ? `<span class='success'>${data.mensaje}</span>` : `<span class='error'>${data.error}</span>`;
+        if(data.mensaje) { form.reset(); buscarLibros(); }
+    }
+
+    async function devolverLibro(e) {
+        e.preventDefault();
+        const form = e.target;
+        const datos = Object.fromEntries(new FormData(form));
+        const res = await fetch('/devoluciones', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(datos)
+        });
+        const data = await res.json();
+        document.getElementById('msg-devolver').innerHTML = data.mensaje ? `<span class='success'>${data.mensaje}</span>` : `<span class='error'>${data.error}</span>`;
+        if(data.mensaje) { form.reset(); buscarLibros(); }
+    }
+
+    async function cargarPopulares() {
+        const res = await fetch('/reportes/populares');
+        const data = await res.json();
+        let html = '<table><tr><th>Título</th><th>Autor</th><th>Préstamos</th></tr>';
+        data.forEach(l => {
+            html += `<tr><td>${l.titulo}</td><td>${l.autor}</td><td>${l.total}</td></tr>`;
+        });
+        html += '</table>';
+        document.getElementById('populares-lista').innerHTML = html;
+    }
+    </script>
+</body>
+</html>

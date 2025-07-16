@@ -1,0 +1,90 @@
+/* Estilos para la biblioteca digital */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 40px;
+    background: #f7f7f7;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 16px;
+    background: #fff;
+    box-shadow: 0 1px 4px #0001;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+th, td {
+    border: 1px solid #e0e0e0;
+    padding: 10px 12px;
+    text-align: left;
+}
+
+th {
+    background: #2980b9;
+    color: #fff;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background: #f8fafd;
+}
+
+tr:hover {
+    background: #eaf6ff;
+}
+
+header {
+    background: #2980b9;
+    color: #fff;
+    padding: 20px 0 10px 0;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px #0001;
+}
+
+header h1 {
+    margin: 0 0 10px 0;
+    text-align: center;
+    font-size: 2.2em;
+    letter-spacing: 1px;
+}
+header nav {
+    display: flex;
+    justify-content: center;
+}
+header nav ul {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+header nav ul li {
+    margin: 0;
+}
+header nav ul li a {
+    display: block;
+    padding: 8px 18px;
+    border-radius: 4px 4px 0 0;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.2s, color 0.2s;
+    font-size: 1.1em;
+}
+header nav ul li a:hover, header nav ul li a.active {
+    background: #fff;
+    color: #2980b9;
+    box-shadow: 0 2px 8px #0002;
+}
+main {
+    background: #fff;
+    padding: 24px;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 2px 8px #0001;
+}
+.success { color: #27ae60; }
+.error { color: #c0392b; }

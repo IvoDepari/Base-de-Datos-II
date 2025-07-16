@@ -1,0 +1,25 @@
+<!-- Plantilla base -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Biblioteca Digital{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Biblioteca Digital</h1>
+        <nav>
+            <ul style="display:flex; gap:20px; list-style:none; padding:0; margin:0;">
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/libros">Libros</a></li>
+                <li><a href="/prestamos">Préstamos</a></li>
+                <li><a href="/populares">Populares</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

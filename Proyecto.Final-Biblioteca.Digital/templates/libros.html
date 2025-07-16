@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Libros - Biblioteca Digital{% endblock %}
+{% block content %}
+<h2 style="margin-bottom: 20px;">Gestión de Libros</h2>
+<section style="margin-bottom: 28px;">
+    <form id="buscar-libros" style="display: flex; gap: 12px; align-items: center; margin-bottom: 10px;">
+        <input type="text" id="busqueda" placeholder="Buscar por título, autor o género" style="flex: 1; max-width: 350px; padding: 7px;">
+        <button type="button" onclick="buscarLibros()">Buscar</button>
+    </form>
+    <div id="libros-lista"></div>
+</section>
+<hr style="margin: 32px 0;">
+<h3 style="margin-bottom: 18px;">Agregar Libro</h3>
+<form id="form-agregar" onsubmit="agregarLibro(event)" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px 18px; align-items: end; max-width: 900px;">
+    <label style="display: flex; flex-direction: column;">Título:
+        <input required name="titulo" style="padding: 7px;">
+    </label>
+    <label style="display: flex; flex-direction: column;">Autor:
+        <input required name="autor" style="padding: 7px;">
+    </label>
+    <label style="display: flex; flex-direction: column;">ISBN:
+        <input required name="isbn" style="padding: 7px;">
+    </label>
+    <label style="display: flex; flex-direction: column;">Género:
+        <input required name="genero" style="padding: 7px;">
+    </label>
+    <label style="display: flex; flex-direction: column;">Año de publicación:
+        <input required type="number" name="anioPublicacion" style="padding: 7px;">
+    </label>
+    <label style="display: flex; flex-direction: column;">Copias:
+        <input required type="number" name="copias" min="1" style="padding: 7px;">
+    </label>
+    <div style="grid-column: 1/-1; text-align: right;">
+        <button type="submit" style="min-width: 130px;">Agregar</button>
+    </div>
+</form>
+<div id="msg-agregar" style="margin-top: 10px;"></div>
+
+<script>
+async function buscarLibros() {
+    const q = document.getElementById('busqueda').value;
+    const url = q ? `/api/libros?busqueda=${encodeURIComponent(q)}` : '/api/libros';
+    const res = await fetch(url);
+    const data = await res.json();
+    let html = '<table><tr><th>Título</th><th>Autor</th><th>ISBN</th><th>Género</th><th>Año</th><th>Copias</th><th>Disponibles</th><th>Acción</th></tr>';
+    for (const libro of data) {
+        html += `<tr><td>${libro.titulo}</td><td>${libro.autor}</td><td>${libro.isbn}</td><td>${libro.genero}</td><td>${libro.anioPublicacion}</td><td>${libro.copias}</td><td>${libro.disponibles}</td><td><button onclick="eliminarLibro('${libro.isbn}')">Eliminar</button></td></tr>`;
+    }
+    html += '</table>';
+    document.getElementById('libros-lista').innerHTML = html;
+}
+
+// Función para eliminar libro
+window.eliminarLibro = async function(isbn) {
+    const res = await fetch(`/api/libros/${isbn}`, { method: 'DELETE' });
+    const data = await res.json();
+    alert(data.mensaje || data.error);
+    buscarLibros();
+}
+
+// Cargar lista de libros al cargar la página
+window.onload = function() {
+    buscarLibros();
+}
+
+async function agregarLibro(e) {
+    e.preventDefault();
+    const form = e.target;
+    const datos = Object.fromEntries(new FormData(form));
+    datos.anioPublicacion = parseInt(datos.anioPublicacion);
+    datos.copias = parseInt(datos.copias);
+    const res = await fetch('/api/libros', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(datos)
+    });
+    const data = await res.json();
+    document.getElementById('msg-agregar').innerHTML = data.mensaje ? `<span class='success'>${data.mensaje}</span>` : `<span class='error'>${data.error}</span>`;
+    if(data.mensaje) { form.reset(); buscarLibros(); }
+}
+</script>
+{% endblock %}

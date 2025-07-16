@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Populares - Biblioteca Digital{% endblock %}
+{% block content %}
+<h2>Top 5 Libros Más Prestados</h2>
+<button onclick="cargarPopulares()">Ver Reporte</button>
+<div id="populares-lista"></div>
+<script>
+async function cargarPopulares() {
+    const res = await fetch('/api/reportes/populares');
+    const data = await res.json();
+    let html = '<table><tr><th>Título</th><th>Autor</th><th>Préstamos</th></tr>';
+    data.forEach(l => {
+        html += `<tr><td>${l.titulo}</td><td>${l.autor}</td><td>${l.total}</td></tr>`;
+    });
+    html += '</table>';
+    document.getElementById('populares-lista').innerHTML = html;
+}
+</script>
+{% endblock %}

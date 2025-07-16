@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Préstamos - Biblioteca Digital{% endblock %}
+{% block content %}
+<h2>Gestión de Préstamos</h2>
+<h3>Registrar Préstamo</h3>
+<form id="form-prestar" onsubmit="prestarLibro(event)">
+    <label>ISBN: <input required name="isbn"></label>
+    <label>Usuario: <input required name="usuario"></label>
+    <button type="submit">Prestar</button>
+</form>
+<div id="msg-prestar"></div>
+<hr>
+<h3>Préstamos Activos / Históricos</h3>
+<div id="prestamos-lista" style="margin-bottom:28px;"></div>
+
+<h3>Devolver Libro</h3>
+<form id="form-devolver" onsubmit="devolverLibro(event)">
+    <label>ID del Préstamo: <input required name="prestamoId"></label>
+    <button type="submit">Devolver</button>
+</form>
+<div id="msg-devolver"></div>
+
+<script>
+async function cargarPrestamos() {
+    const res = await fetch('/api/prestamos');
+    const data = await res.json();
+    let html = '<table><tr><th>ID</th><th>ISBN</th><th>Título</th><th>Usuario</th><th>Fecha Préstamo</th><th>Devuelto</th><th>Fecha Devolución</th><th>Acción</th></tr>';
+    for (const p of data) {
+        html += `<tr><td>${p._id}</td><td>${p.isbn || ''}</td><td>${p.titulo_libro || ''}</td><td>${p.usuario || ''}</td><td>${p.fechaPrestamo ? new Date(p.fechaPrestamo).toLocaleString() : ''}</td><td>${p.devuelto ? 'Sí' : 'No'}</td><td>${p.fechaDevolucion ? new Date(p.fechaDevolucion).toLocaleString() : ''}</td><td><button onclick="eliminarPrestamo('${p._id}')">Eliminar</button></td></tr>`;
+    }
+    html += '</table>';
+    document.getElementById('prestamos-lista').innerHTML = html;
+
+// Función para eliminar préstamo
+window.eliminarPrestamo = async function(id) {
+    const res = await fetch(`/api/prestamos/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    alert(data.mensaje || data.error);
+    cargarPrestamos();
+}
+
+}
+window.onload = function() {
+    cargarPrestamos();
+};
+</script>
+<script>
+async function prestarLibro(e) {
+    e.preventDefault();
+    const form = e.target;
+    const datos = Object.fromEntries(new FormData(form));
+    const res = await fetch('/api/prestamos', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(datos)
+    });
+    const data = await res.json();
+    document.getElementById('msg-prestar').innerHTML = data.mensaje ? `<span class='success'>${data.mensaje}</span>` : `<span class='error'>${data.error}</span>`;
+    if(data.mensaje) { form.reset(); }
+}
+async function devolverLibro(e) {
+    e.preventDefault();
+    const form = e.target;
+    const datos = Object.fromEntries(new FormData(form));
+    const res = await fetch('/api/devoluciones', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(datos)
+    });
+    const data = await res.json();
+    document.getElementById('msg-devolver').innerHTML = data.mensaje ? `<span class='success'>${data.mensaje}</span>` : `<span class='error'>${data.error}</span>`;
+    if(data.mensaje) { form.reset(); }
+}
+</script>
+{% endblock %}
