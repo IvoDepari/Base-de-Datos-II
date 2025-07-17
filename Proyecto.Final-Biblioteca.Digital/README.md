@@ -1,6 +1,13 @@
-# Proyecto Final - BBDD2
+# Proyecto Final - Base de Datos2
 
-## Biblioteca Digital
+## Proyecto elegido
+**Biblioteca Digital**
+
+## Tecnología utilizada
+Python con Flask y PyMongo
+
+## Interfaz de usuario
+Aplicación web (WebApp) con vistas HTML y API REST
 
 **Participantes:**
 - Giuseppe Giovanelli
