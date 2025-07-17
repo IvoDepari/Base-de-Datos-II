@@ -51,7 +51,7 @@ La app Flask se conecta a MongoDB usando PyMongo. Los modelos encapsulan la lóg
 1. **Clona el repositorio y entra a la carpeta:**
    ```bash
    git clone <https://github.com/IvoDepari/Base-de-Datos-II/tree/main>
-   cd BibliotecaDigital
+   cd Proyecto.Final-Biblioteca.Digital
    ```
 2. **Copia el archivo `.env` de ejemplo y ajusta si es necesario:**
    ```env
